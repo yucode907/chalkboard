@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chalkboard</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#122C34">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chalkboard">
+<style>
+:root{--pri:#224870;--hd:var(--pri);--acc:#44CFCB;--bg:#EFF3F6;--card:#FFFFFF;--ink:#122C34;--mut:#566A73;--line:#D3DCE2;--ok:#44CFCB;--bad:#C44536;--late:#4EA5D9;--exc:#2A4494;--onpri:#FFFFFF;--fs:16px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1D23;--card:#122C34;--ink:#E8F0F3;--mut:#8FA7B0;--line:#24434D;--pri:#224870;--hd:#8CCBEF}}
+:root[data-theme="dark"]{--bg:#0C1D23;--card:#122C34;--ink:#E8F0F3;--mut:#8FA7B0;--line:#24434D;--pri:#224870;--hd:#8CCBEF}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}:focus-visible{outline:2px solid #4EA5D9;outline-offset:2px}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:var(--fs)/1.45 "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+h1,h2,h3{font-family:"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;margin:0 0 .5em;letter-spacing:.01em;color:var(--hd)}
+#app{display:flex;height:100%}
+nav{width:176px;background:#122C34;color:var(--onpri);display:flex;flex-direction:column;gap:2px;padding:12px 0;overflow:auto}
+nav b{font:700 18px "Segoe UI",system-ui,sans-serif;padding:10px 16px 18px;color:#fff;letter-spacing:.02em}
+nav button{background:none;border:0;border-left:4px solid transparent;color:#cfe0e6;padding:13px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:left}
+
+nav button.on{background:var(--pri);color:#fff;border-left-color:var(--acc)}
+main{flex:1;overflow:auto;padding:22px 26px 40px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--pri);border-radius:0;padding:18px;margin-bottom:14px}
+.stat{flex:1 1 140px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--pri);padding:14px 18px;font-weight:600;color:var(--mut)}.stat b{color:var(--ink);display:block;font:700 2.2em "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+summary{cursor:pointer;font-weight:700;min-height:32px;color:var(--hd)}details p,details li{margin:.4em 0}
+table{border-collapse:collapse;width:100%}th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}td input{width:80px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.btn{border:0;border-radius:0;padding:12px 16px;font:inherit;font-weight:700;cursor:pointer;background:var(--pri);color:var(--onpri);min-height:44px}
+.btn.alt{background:var(--acc);color:#122C34}.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:6px 10px;min-height:34px;font-size:.85em}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:0;padding:10px;width:100%;min-height:42px}
+textarea{resize:vertical}
+label{display:block;font-size:.85em;color:var(--mut);margin:8px 0 3px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:0 1 auto}.grow{flex:1 1 160px!important}
+.mut{color:var(--mut)}.pill{display:inline-block;border-radius:0;padding:2px 10px;font-size:.8em;background:var(--line)}
+.st{display:flex;gap:6px}.st button{flex:1;min-width:48px;border:2px solid var(--line);background:var(--bg);color:var(--ink);border-radius:0;min-height:46px;font:inherit;font-weight:700;cursor:pointer}
+.st button.P.on{background:var(--ok);border-color:var(--ok);color:#122C34}.st button.A.on{background:var(--bad);border-color:var(--bad);color:#fff}.st button.L.on{background:var(--late);border-color:var(--late);color:#222}.st button.E.on{background:var(--exc);border-color:var(--exc);color:#fff}
+.stu{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}.stu .nm{flex:1;min-width:110px;font-weight:600}.stu .st{flex:0 0 min(56%,330px)}
+.note{border-radius:0;padding:12px;cursor:pointer;border:2px solid transparent;margin-bottom:8px;color:#122C34}.note.sel{border-color:var(--pri)}
+.sw{width:30px;height:30px;border-radius:0;border:3px solid transparent;cursor:pointer;padding:0}.sw.on{border-color:var(--ink)}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.chk input{width:22px;min-height:22px;height:22px}
+.sw2{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0}.sw2 input{width:24px;height:24px;min-height:0}
+.days button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:0;padding:6px 10px;cursor:pointer;font:inherit}.days button.on{background:var(--pri);color:var(--onpri)}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}#modal.show{display:flex}#modal .card{width:min(560px,100%);margin:0}
+#sb{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#122C34,#0A1A20);color:#f3f1e8;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;cursor:pointer;padding-top:calc(24px + env(safe-area-inset-top,0px))}#sb.show{display:flex}
+#sb .t{font:300 clamp(64px,16vw,168px)/1 "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}#sb .d{font-size:clamp(18px,3vw,30px);opacity:.8}
+#sb .cl{font-size:clamp(16px,2.4vw,24px);opacity:.9}
+#sb .rc{min-height:120px;width:min(560px,92%);border-radius:0;padding:18px 22px;background:var(--acc);color:#122C34;font-size:clamp(18px,2.6vw,28px);font-family:"Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;transition:opacity 1s}
+#sb .wk{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));font-size:13px;opacity:.5}
+@media (max-width:700px){#app{flex-direction:column-reverse}nav{width:auto;flex-direction:row;padding:6px;justify-content:space-around}nav b{font:700 18px "Segoe UI",system-ui,sans-serif;padding:10px 16px 18px;color:#fff;letter-spacing:.02em}nav b{display:none}nav button{border-left:0;border-bottom:3px solid transparent;padding:10px 12px;white-space:nowrap}nav button.on{border-bottom-color:var(--acc)}main{padding:16px}.stu .st{flex-basis:100%}}
+@media (prefers-reduced-motion:reduce){#sb .rc{transition:none}}
+</style>
+</head>
+<body>
+<div id="app"><nav id="nav"></nav><main id="main"></main></div>
+<div id="modal"><div class="card" id="mbody"></div></div>
+<div id="sb"><div class="t" id="sbt"></div><div class="d" id="sbd"></div><div class="cl" id="sbc"></div><div class="rc" id="sbr"></div><div class="wk">Tap anywhere to wake</div></div>
+<script>
+const KEY='chalkboard.v1',$=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEF={settings:{name:'',theme:'auto',accent:'#44CFCB',primary:'#224870',font:16,standby:2,sbClock:true,sbClass:true,sbNotes:true,sbAtt:true,h24:false,showLate:true,showExc:true,rot:7},classes:[],grades:[],att:{},notes:[],todos:[]};
+let S;try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
+S=Object.assign(structuredClone(DEF),S||{});S.settings=Object.assign({},DEF.settings,S.settings);if(['#1F3A33','#3A2FD0'].includes(S.settings.primary))S.settings.primary=DEF.settings.primary;if(['#F2C94C','#FFC62E'].includes(S.settings.accent))S.settings.accent=DEF.settings.accent;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+let view='home',curCls=null,curNote=null,date=new Date().toISOString().slice(0,10),q='';
+const NAV=[['home','Home'],['att','Attendance'],['notes','Notes'],['tasks','Tasks'],['sched','Classes'],['grades','Grades'],['tools','Tools'],['set','Settings'],['help','How to']];
+const DAYN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],COL=['#DCEFF8','#D5F4F3','#E3E9F5','#EAF0F3','#C9E0EE'];
+const mins=t=>{const[a,b]=(t||'0:0').split(':').map(Number);return a*60+b},nowM=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const fmt=t=>{const[h,m]=t.split(':').map(Number);if(S.settings.h24)return t;return((h+11)%12+1)+':'+String(m).padStart(2,'0')+(h<12?' AM':' PM')};
+const today=()=>S.classes.filter(c=>c.days.includes(new Date().getDay())).sort((a,b)=>mins(a.start)-mins(b.start));
+function theme(){const s=S.settings,r=document.documentElement;r.style.setProperty('--acc',s.accent);r.style.setProperty('--fs',s.font+'px');
+ if(s.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',s.theme);
+ if(s.theme!=='dark'&&!(s.theme==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches))r.style.setProperty('--pri',s.primary);else r.style.removeProperty('--pri')}
+function render(){theme();$('#nav').innerHTML='<b>Chalkboard</b>'+NAV.map(n=>`<button class="${view===n[0]?'on':''}" data-v="${n[0]}">${n[1]}</button>`).join('');
+ $('#main').innerHTML=({home,att,notes,tasks,sched,grades,tools,set,help})[view]();if(view==='notes')bindNotes()}
+function modal(h){$('#mbody').innerHTML=h;$('#modal').classList.add('show')}
+const closeM=()=>$('#modal').classList.remove('show');
+function greet(){const h=new Date().getHours();return(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+(S.settings.name?', '+esc(S.settings.name):'')}
+function home(){const t=today(),n=nowM(),pin=[...S.notes.filter(x=>x.pin),...S.todos.filter(x=>x.pin&&!x.done)];
+ return `<div class="top"><h1>${greet()}</h1><button class="btn alt" data-a="standby">Show standby card</button></div>
+ <div class="row" style="margin-bottom:14px">${[[t.length,'classes today','var(--pri)'],[S.todos.filter(x=>!x.done).length,'open tasks','#2A4494'],[S.notes.length,'notes','#122C34'],[S.classes.reduce((a,c)=>a+c.students.length,0),'students','#4EA5D9']].map(s=>`<div class="stat" style="border-left-color:${s[2]}"><b>${s[0]}</b>${s[1]}</div>`).join('')}</div><div class="grid"><div class="card"><h3>Today’s classes</h3>${t.length?t.map(c=>{const live=mins(c.start)<=n&&n<mins(c.end),done=S.att[date+'|'+c.id];return `<div class="stu"><div class="nm">${esc(c.name)}<div class="mut">${fmt(c.start)} – ${fmt(c.end)}${c.room?' · '+esc(c.room):''}</div></div>${live?'<span class="pill" style="background:var(--acc);color:#122C34">Now</span>':''}<button class="btn sm ${done?'ghost':''}" data-a="takeatt" data-id="${c.id}">${done?'Edit attendance':'Take attendance'}</button></div>`}).join(''):'<p class="mut">No classes today. Add your timetable in Classes.</p>'}</div>
+ <div class="card"><h3>Pinned reminders</h3>${pin.length?pin.map(p=>`<div class="note" style="background:${p.color||COL[0]}"><b>${esc(p.title||p.text)}</b>${p.body?'<div>'+esc(p.body.slice(0,90))+'</div>':''}</div>`).join(''):'<p class="mut">Pin a note or task and it will show here and on the standby card.</p>'}</div></div>
+ <div class="card"><b>Quick add</b><div class="row" style="margin-top:8px"><input class="grow" id="qa" placeholder="Reminder, e.g. Call parent of Sam"><button class="btn" data-a="qadd">Add as pinned task</button></div></div>`}
+function att(){if(!S.classes.length)return `<h1>Attendance</h1><div class="card"><p>Add a class first, then paste in your student names.</p><button class="btn" data-v="sched">Go to Classes</button></div>`;
+ const c=S.classes.find(x=>x.id===curCls)||S.classes[0];curCls=c.id;const rec=S.att[date+'|'+c.id]||{};const cnt={P:0,A:0,L:0,E:0};Object.values(rec).forEach(v=>cnt[v]++);
+ const sts=[['P','Present'],['A','Absent']];if(S.settings.showLate)sts.push(['L','Late']);if(S.settings.showExc)sts.push(['E','Excused']);
+ return `<div class="top"><h1>Attendance</h1></div><div class="card row"><select class="grow" data-c="cls">${S.classes.map(x=>`<option value="${x.id}" ${x.id===c.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select><input type="date" value="${date}" data-c="date" style="width:auto">
+ <button class="btn alt" data-a="allp">Mark all present</button><button class="btn ghost" data-a="clr">Clear</button><button class="btn ghost" data-a="csv">Copy CSV</button><label class="btn ghost" style="margin:0;color:var(--ink);display:inline-flex;align-items:center">Import roster CSV<input type="file" accept=".csv,.txt" data-c="file" hidden></label></div>
+ <div class="card"><div class="row mut" style="margin-bottom:6px">${sts.map(s=>`<span class="pill">${s[1]}: <b>${cnt[s[0]]}</b></span>`).join('')}<span class="pill">Not marked: <b>${c.students.length-Object.keys(rec).length}</b></span></div>
+ ${c.students.length?c.students.map(s=>`<div class="stu"><div class="nm">${esc(s.name)}</div><div class="st">${sts.map(x=>`<button class="${x[0]} ${rec[s.id]===x[0]?'on':''}" data-a="mark" data-s="${s.id}" data-k="${x[0]}" title="${x[1]}">${x[0]}</button>`).join('')}</div></div>`).join(''):'<p class="mut">No students yet.</p>'}
+ <div style="margin-top:14px"><label>Add students (one name per line, or paste a column from a spreadsheet)</label><textarea id="addst" rows="3"></textarea><div class="row" style="margin-top:8px"><button class="btn" data-a="addst">Add to roster</button>${c.students.length?'<button class="btn ghost" data-a="rmst">Remove a student</button>':''}</div></div></div>`}
+function notes(){const l=S.notes.filter(n=>(n.title+n.body).toLowerCase().includes(q.toLowerCase())).sort((a,b)=>b.ts-a.ts),n=S.notes.find(x=>x.id===curNote);
+ return `<div class="top"><h1>Notes</h1><button class="btn" data-a="newnote">+ New note</button></div><div class="grid" style="grid-template-columns:minmax(220px,1fr) 2fr"><div><input id="nq" placeholder="Search notes" value="${esc(q)}" style="margin-bottom:10px">${l.map(x=>`<div class="note ${x.id===curNote?'sel':''}" style="background:${x.color}" data-a="opennote" data-id="${x.id}"><b>${x.pin?'Pinned: ':''}${esc(x.title||'Untitled')}</b><div style="opacity:.75;font-size:.85em">${esc(x.body.slice(0,60))}</div></div>`).join('')||'<p class="mut">No notes yet.</p>'}</div>
+ <div class="card">${n?`<input id="nt" value="${esc(n.title)}" placeholder="Title" style="font-weight:700;font-size:1.2em"><label>Note</label><textarea id="nb" rows="12" placeholder="Start writing. Lines like “- Photocopy quiz” work great as a to-do list.">${esc(n.body)}</textarea>
+ <div class="row" style="margin-top:10px">${COL.map(c=>`<button class="sw ${n.color===c?'on':''}" style="background:${c}" data-a="ncol" data-k="${c}"></button>`).join('')}<label class="row" style="margin:0 0 0 auto;color:var(--ink)"><input type="checkbox" id="np" ${n.pin?'checked':''} style="width:22px;min-height:22px"> Pin to standby</label><button class="btn ghost sm" data-a="delnote">Delete</button></div>`:'<p class="mut">Choose a note or start a new one.</p>'}</div></div>`}
+function bindNotes(){const n=S.notes.find(x=>x.id===curNote);$('#nq').oninput=e=>{q=e.target.value;const p=e.target.selectionStart;render();const i=$('#nq');i.focus();i.setSelectionRange(p,p)};
+ if(!n)return;$('#nt').oninput=e=>{n.title=e.target.value;n.ts=Date.now();save()};$('#nb').oninput=e=>{n.body=e.target.value;n.ts=Date.now();save()};$('#np').onchange=e=>{n.pin=e.target.checked;save()}}
+function tasks(){const l=[...S.todos].sort((a,b)=>a.done-b.done||(a.due||'9').localeCompare(b.due||'9'));
+ return `<h1>Tasks & reminders</h1><div class="card row"><input class="grow" id="tt" placeholder="New task, e.g. Grade Period 3 quizzes"><input type="date" id="td" style="width:auto"><button class="btn" data-a="addtask">Add task</button></div><div class="card">${l.map(t=>`<div class="chk"><input type="checkbox" ${t.done?'checked':''} data-a="tdone" data-id="${t.id}"><div class="grow" style="${t.done?'text-decoration:line-through;opacity:.5':''}">${esc(t.text)}${t.due?` <span class="pill">${t.due}</span>`:''}</div><button class="btn ghost sm" data-a="tpin" data-id="${t.id}">${t.pin?'Unpin':'Pin'}</button><button class="btn ghost sm" data-a="tdel" data-id="${t.id}">✕</button></div>`).join('')||'<p class="mut">Nothing to do. Enjoy it.</p>'}</div>`}
+function sched(){return `<div class="top"><h1>Classes & schedule</h1><button class="btn" data-a="addcls">+ Add class</button></div>${S.classes.map(c=>`<div class="card"><div class="row"><div class="grow"><label>Class name</label><input data-f="name" data-id="${c.id}" value="${esc(c.name)}"></div><div class="grow"><label>Room</label><input data-f="room" data-id="${c.id}" value="${esc(c.room)}"></div><div><label>Starts</label><input type="time" data-f="start" data-id="${c.id}" value="${c.start}"></div><div><label>Ends</label><input type="time" data-f="end" data-id="${c.id}" value="${c.end}"></div></div>
+ <div class="row days" style="margin-top:10px">${[1,2,3,4,5,6,0].map(d=>`<button class="${c.days.includes(d)?'on':''}" data-a="day" data-id="${c.id}" data-d="${d}">${DAYN[d]}</button>`).join('')}<span class="mut">${c.students.length} students</span><button class="btn ghost sm" style="margin-left:auto" data-a="delcls" data-id="${c.id}">Delete class</button></div></div>`).join('')||'<div class="card"><p class="mut">No classes yet. Add your first one to build your timetable and rosters.</p></div>'}`}
+function set(){const s=S.settings,ck=(k,l)=>`<div class="sw2"><span>${l}</span><input type="checkbox" data-s="${k}" ${s[k]?'checked':''}></div>`;
+ return `<h1>Settings</h1><div class="grid"><div class="card"><h3>You</h3><label>Your name (shown in greeting)</label><input data-s="name" value="${esc(s.name)}"><h3 style="margin-top:16px">Look</h3><label>Theme</label><select data-s="theme">${['auto','light','dark'].map(o=>`<option ${s.theme===o?'selected':''} value="${o}">${o==='auto'?'Match device':o[0].toUpperCase()+o.slice(1)}</option>`).join('')}</select>
+ <div class="row"><div class="grow"><label>Main color</label><input type="color" data-s="primary" value="${s.primary}"></div><div class="grow"><label>Accent color</label><input type="color" data-s="accent" value="${s.accent}"></div></div><label>Text size: ${s.font}px</label><input type="range" min="13" max="24" data-s="font" value="${s.font}">${ck('h24','24-hour clock')}</div>
+ <div class="card"><h3>Standby card</h3><label>Start after</label><select data-s="standby">${[[0,'Never'],[1,'1 minute'],[2,'2 minutes'],[5,'5 minutes'],[10,'10 minutes'],[15,'15 minutes']].map(o=>`<option value="${o[0]}" ${+s.standby===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select><label>Seconds per reminder: ${s.rot}</label><input type="range" min="3" max="20" data-s="rot" value="${s.rot}">${ck('sbClock','Show time and date')}${ck('sbClass','Show current & next class')}${ck('sbNotes','Show pinned reminders')}${ck('sbAtt','Show missing attendance')}
+ <h3 style="margin-top:16px">Attendance</h3>${ck('showLate','Use “Late”')}${ck('showExc','Use “Excused”')}</div>
+ <div class="card"><h3>Backup & data</h3><p class="mut">Everything stays on this device. Copy a backup to keep it safe or move to another tablet.</p><div class="row"><button class="btn" data-a="export">Copy backup</button><button class="btn ghost" data-a="import">Restore backup</button><button class="btn ghost" data-a="reset">Erase all data</button></div></div></div>`}
+let pickv='',grpHtml='',tmLeft=300,tmRun=null;
+const tmf=()=>String(tmLeft/60|0).padStart(2,'0')+':'+String(tmLeft%60).padStart(2,'0');
+function beep(){const e=$('#tm');if(e)e.textContent='Time’s up!';try{const a=new AudioContext,o=a.createOscillator();o.connect(a.destination);o.start();setTimeout(()=>o.stop(),800)}catch(x){}}
+function parseRoster(t){const rows=t.split(/\r?\n/).map(r=>r.trim()).filter(Boolean).map(r=>r.split(',').map(x=>x.replace(/^"|"$/g,'').trim()));if(!rows.length)return[];let i=rows[0].findIndex(x=>/^(student|name)/i.test(x));if(i>-1)rows.shift();else i=0;return rows.map(r=>r[i]).filter(Boolean)}
+const avc=(cid,sid)=>{let p=0,m=0;S.grades.filter(g=>g.cls===cid).forEach(g=>{const v=g.sc[sid];if(v!==undefined){p+=v;m+=g.max}});if(!m)return'–';const a=Math.round(p/m*100);return `<b style="color:var(--${a<65?'bad':'ok'})">${a}%</b>`};
+const clsSel=c=>`<select class="grow" data-c="cls">${S.classes.map(x=>`<option value="${x.id}" ${x.id===c.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`;
+function grades(){if(!S.classes.length)return `<h1>Gradebook</h1><div class="card"><p>Add a class first.</p><button class="btn" data-v="sched">Go to Classes</button></div>`;
+const c=S.classes.find(x=>x.id===curCls)||S.classes[0];curCls=c.id;const as=S.grades.filter(g=>g.cls===c.id);
+return `<h1>Gradebook</h1><div class="card row">${clsSel(c)}<input class="grow" id="gn" placeholder="Assignment, e.g. Quiz 1"><input id="gm" type="number" value="100" style="width:90px" title="Total points"><button class="btn alt" data-a="addg">Add assignment</button><button class="btn ghost" data-a="gcsv">Copy CSV</button></div><div class="card" style="overflow:auto">${c.students.length&&as.length?`<table><tr><th>Student</th>${as.map(g=>`<th>${esc(g.name)} /${g.max} <button class="btn ghost sm" data-a="delg" data-id="${g.id}">✕</button></th>`).join('')}<th>Average</th></tr>${c.students.map(s=>`<tr><td>${esc(s.name)}</td>${as.map(g=>`<td><input type="number" data-g="1" data-id="${g.id}" data-sid="${s.id}" value="${g.sc[s.id]??''}"></td>`).join('')}<td id="av-${s.id}">${avc(c.id,s.id)}</td></tr>`).join('')}</table>`:'<p class="mut">Add students (Attendance page) and at least one assignment to start. Averages under 65% turn red so you can spot who needs help.</p>'}</div>`}
+function tools(){const c=S.classes.find(x=>x.id===curCls)||S.classes[0];if(c)curCls=c.id;
+return `<h1>Classroom tools</h1><div class="grid"><div class="card"><h3>Random student</h3>${c?clsSel(c):'<p class="mut">Add a class first.</p>'}<div style="font:700 2em "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;margin:12px 0;min-height:1.3em;color:var(--hd)">${esc(pickv)}</div><button class="btn alt" data-a="pick">Pick a student</button></div><div class="card"><h3>Group maker</h3><label>Students per group</label><input id="gs" type="number" min="2" value="3"><button class="btn" style="margin:8px 0" data-a="groups">Make groups</button>${grpHtml}</div><div class="card"><h3>Timer</h3><div id="tm" style="font:300 4em "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif;color:var(--hd)">${tmf()}</div><div class="row">${[1,5,10,15].map(m=>`<button class="btn ghost sm" data-a="tset" data-m="${m}">${m} min</button>`).join('')}<button class="btn" data-a="tgo">Start / pause</button></div></div></div>`}
+function help(){const d=(t,b)=>`<details class="card"><summary>${t}</summary>${b}</details>`;return `<h1>How to use Chalkboard</h1><p class="mut">Tap a topic to open it.</p>`+
+d('1. Get started in 2 minutes','<ol><li>Open <b>Classes</b>, tap <b>Add class</b>, then set the name, room, start and end times, and the days it meets.</li><li>Open <b>Attendance</b>, pick the class, and add students (see below).</li><li>Tap <b>Take attendance</b> on Home whenever class starts.</li></ol>')+
+d('2. Add students: type, paste or CSV','<ul><li><b>Paste:</b> in Attendance, type or paste one name per line, then tap <b>Add to roster</b>. You can copy a whole column from Excel or Google Sheets.</li><li><b>CSV file:</b> put names in one column (column A, or a column titled “Name” or “Student”), save the sheet as CSV, then tap <b>Import roster CSV</b> and choose the file.</li><li>Use one column per name, like “Maria Lopez”. Names split across two columns aren’t combined.</li><li>Remove a student with <b>Remove a student</b>.</li></ul>')+
+d('3. Take attendance','<ul><li>Tap <b>P</b> Present, <b>A</b> Absent, <b>L</b> Late or <b>E</b> Excused. Tap the same button again to un-mark.</li><li><b>Mark all present</b> fills everyone, then change the exceptions.</li><li>Change the date to fix or fill in a past day. Each class and date is saved separately.</li><li>Don’t need Late or Excused? Turn them off in Settings.</li></ul>')+
+d('4. Export attendance or grades (CSV)','<ul><li>Tap <b>Copy CSV</b>. A box opens with columns for date, class, student and status.</li><li>Tap <b>Copy</b>, then paste into Excel, Google Sheets, or the school’s system.</li><li>The Gradebook has its own <b>Copy CSV</b> with every score and each average.</li></ul>')+
+d('5. Notes and tasks','<ul><li><b>Notes:</b> tap <b>New note</b>, write, pick a color, and use <b>Pin to standby</b> to show it on the standby card. Search finds any word.</li><li><b>Tasks:</b> add a task with an optional due date. Tap <b>Pin</b> to show it on Home and the standby card. Check it off when done.</li></ul>')+
+d('6. Gradebook','<ul><li>Pick a class, name an assignment, set total points, and tap <b>Add assignment</b>.</li><li>Type each score in the table. Averages update right away and turn red under 65%.</li><li>Tap ✕ on a column to delete that assignment.</li></ul>')+
+d('7. Tools','<ul><li><b>Random student</b> picks one name from the class.</li><li><b>Group maker</b> shuffles students into groups of your size.</li><li><b>Timer</b> counts down with a beep. Choose a time, then Start / pause.</li></ul>')+
+d('8. Standby card','<p>After the tablet sits idle, a full-screen card shows the time, date, current and next class, missing attendance and your pinned reminders. Tap anywhere to wake it. Choose the delay and what it shows in <b>Settings</b>, or tap <b>Show standby card</b> on Home to try it.</p>')+
+d('9. Settings, backup and privacy','<ul><li>Change colors, theme, text size and the clock in Settings.</li><li>All data stays on this tablet. Use <b>Copy backup</b> often and keep it somewhere safe. <b>Restore backup</b> moves everything to another tablet.</li><li>Install it: in the browser menu, choose <b>Add to Home Screen</b>.</li></ul>')}
+// events
+document.addEventListener('click',e=>{const el=e.target.closest('[data-v],[data-a]');if(!el)return;if(el.dataset.v){view=el.dataset.v;return render()}
+ const a=el.dataset.a,id=el.dataset.id,c=S.classes.find(x=>x.id===curCls);
+ const A={pick:()=>{const k=S.classes.find(x=>x.id===curCls);pickv=!k||!k.students.length?'Add students first':k.students[Math.random()*k.students.length|0].name},
+groups:()=>{const k=S.classes.find(x=>x.id===curCls);if(!k)return;const n=Math.max(2,+$('#gs').value||3),l=[...k.students].sort(()=>Math.random()-.5),g=[];for(let i=0;i<l.length;i+=n)g.push(l.slice(i,i+n));grpHtml=g.map((x,i)=>`<div class="note" style="background:${COL[i%5]}"><b>Group ${i+1}</b><br>${x.map(s=>esc(s.name)).join(', ')}</div>`).join('')},
+tset:()=>{tmLeft=+el.dataset.m*60;clearInterval(tmRun);tmRun=null},
+tgo:()=>{if(tmRun){clearInterval(tmRun);tmRun=null;return}if(tmLeft<=0)tmLeft=300;tmRun=setInterval(()=>{tmLeft--;const e=$('#tm');if(e)e.textContent=tmf();if(tmLeft<=0){clearInterval(tmRun);tmRun=null;tmLeft=0;beep()}},1000)},
+addg:()=>{const n=$('#gn').value.trim();if(n)S.grades.push({id:uid(),cls:curCls,name:n,max:+$('#gm').value||100,sc:{}})},
+delg:()=>{S.grades=S.grades.filter(x=>x.id!==id)},
+gcsv:()=>{const k=S.classes.find(x=>x.id===curCls),as=S.grades.filter(g=>g.cls===k.id),q=x=>'"'+String(x).replace(/"/g,'""')+'"';modal(`<h3>Grades CSV</h3><p class="mut">Copy, then paste into a spreadsheet.</p><textarea id="ta" rows="9" readonly>${esc(['Student',...as.map(g=>g.name+' /'+g.max),'Average %'].map(q).join(',')+'\n'+k.students.map(s=>[s.name,...as.map(g=>g.sc[s.id]??''),avc(k.id,s.id).replace(/<[^>]+>/g,'')].map(q).join(',')).join('\n'))}</textarea><div class="row" style="margin-top:10px"><button class="btn" data-a="copyta">Copy</button><button class="btn ghost" data-a="close">Close</button></div>`);return},
+standby:()=>wake(true),takeatt:()=>{curCls=id;view='att'},
+ qadd:()=>{const v=$('#qa').value.trim();if(v)S.todos.push({id:uid(),text:v,pin:true,done:false,due:''})},
+ mark:()=>{const k=date+'|'+c.id,r=S.att[k]=S.att[k]||{};r[el.dataset.s]=r[el.dataset.s]===el.dataset.k?undefined:el.dataset.k;if(!r[el.dataset.s])delete r[el.dataset.s]},
+ allp:()=>{const r=S.att[date+'|'+c.id]={};c.students.forEach(s=>r[s.id]='P')},clr:()=>{delete S.att[date+'|'+c.id]},
+ addst:()=>{$('#addst').value.split('\n').map(x=>x.trim()).filter(Boolean).forEach(n=>c.students.push({id:uid(),name:n}))},
+ rmst:()=>{modal(`<h3>Remove a student</h3><select id="rs">${c.students.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select><div class="row" style="margin-top:12px"><button class="btn" data-a="rmok">Remove</button><button class="btn ghost" data-a="close">Cancel</button></div>`);return},
+ rmok:()=>{c.students=c.students.filter(s=>s.id!==$('#rs').value);closeM()},close:()=>{closeM();return 1},
+ csv:()=>{const r=S.att[date+'|'+c.id]||{},N={P:'Present',A:'Absent',L:'Late',E:'Excused'};modal(`<h3>Attendance CSV</h3><p class="mut">Select all and copy, then paste into a spreadsheet.</p><textarea id="ta" rows="9" readonly>${esc('Date,Class,Student,Status\n'+c.students.map(s=>[date,c.name,s.name,N[r[s.id]]||'Not marked'].map(x=>'"'+x+'"').join(',')).join('\n'))}</textarea><div class="row" style="margin-top:10px"><button class="btn" data-a="copyta">Copy</button><button class="btn ghost" data-a="close">Close</button></div>`);return},
+ copyta:()=>{const t=$('#ta');t.select();try{navigator.clipboard.writeText(t.value)}catch(x){}return 1},
+ newnote:()=>{const n={id:uid(),title:'',body:'',color:COL[0],pin:false,ts:Date.now()};S.notes.push(n);curNote=n.id},opennote:()=>{curNote=id},
+ ncol:()=>{S.notes.find(x=>x.id===curNote).color=el.dataset.k},delnote:()=>{S.notes=S.notes.filter(x=>x.id!==curNote);curNote=null},
+ addtask:()=>{const v=$('#tt').value.trim();if(v)S.todos.push({id:uid(),text:v,due:$('#td').value,pin:false,done:false})},
+ tdone:()=>{const t=S.todos.find(x=>x.id===id);t.done=!t.done},tpin:()=>{const t=S.todos.find(x=>x.id===id);t.pin=!t.pin},tdel:()=>{S.todos=S.todos.filter(x=>x.id!==id)},
+ addcls:()=>{S.classes.push({id:uid(),name:'New class',room:'',start:'08:00',end:'08:50',days:[1,2,3,4,5],students:[]})},
+ day:()=>{const k=S.classes.find(x=>x.id===id),d=+el.dataset.d;k.days=k.days.includes(d)?k.days.filter(x=>x!==d):[...k.days,d]},
+ delcls:()=>{if(confirm('Delete this class and its roster?'))S.classes=S.classes.filter(x=>x.id!==id)},
+ export:()=>{modal(`<h3>Backup</h3><textarea id="ta" rows="8" readonly>${esc(JSON.stringify(S))}</textarea><div class="row" style="margin-top:10px"><button class="btn" data-a="copyta">Copy</button><button class="btn ghost" data-a="close">Close</button></div>`);return},
+ import:()=>{modal(`<h3>Restore backup</h3><p class="mut">Paste a backup here. This replaces current data.</p><textarea id="ta" rows="8"></textarea><div class="row" style="margin-top:10px"><button class="btn" data-a="doimp">Restore</button><button class="btn ghost" data-a="close">Cancel</button></div>`);return},
+ doimp:()=>{try{const d=JSON.parse($('#ta').value);S=Object.assign(structuredClone(DEF),d);S.settings=Object.assign({},DEF.settings,d.settings);closeM()}catch(x){alert('That doesn’t look like a Chalkboard backup.');return 1}},
+ reset:()=>{if(confirm('Erase everything on this device?'))S=structuredClone(DEF)}};
+ if(!A[a])return;if(A[a]()===1)return;save();render()});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.g){const g=S.grades.find(x=>x.id===t.dataset.id);if(t.value==='')delete g.sc[t.dataset.sid];else g.sc[t.dataset.sid]=+t.value;save();const e=$('#av-'+t.dataset.sid);if(e)e.innerHTML=avc(g.cls,t.dataset.sid);return}
+ if(t.dataset.c==='file'){const f=t.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const k=S.classes.find(x=>x.id===curCls),n=parseRoster(r.result);n.forEach(x=>k.students.push({id:uid(),name:x}));save();render();modal(`<h3>Imported ${n.length} students</h3><p class="mut">Added to ${esc(k.name)}.</p><button class="btn" data-a="close">Done</button>`)};r.readAsText(f);return}
+ if(t.dataset.c==='cls'){curCls=t.value;render()}else if(t.dataset.c==='date'){date=t.value||date;render()}
+ else if(t.dataset.f){S.classes.find(x=>x.id===t.dataset.id)[t.dataset.f]=t.value;save()}
+ else if(t.dataset.s){const k=t.dataset.s;S.settings[k]=t.type==='checkbox'?t.checked:(t.type==='range'||k==='standby')?+t.value:t.value;save();theme();if(k==='standby')arm();if(['font','rot','theme'].includes(k)===false)render()}});
+document.addEventListener('input',e=>{const t=e.target;if(t.type==='range'&&t.dataset.s){S.settings[t.dataset.s]=+t.value;save();theme();t.previousElementSibling.textContent=t.previousElementSibling.textContent.replace(/\d+/,t.value)}});
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeM()});
+// standby
+let idle,rot,ri=0,sbOn=false;
+function arm(){clearTimeout(idle);if(sbOn||!S.settings.standby)return;idle=setTimeout(()=>wake(true),S.settings.standby*60000)}
+function wake(on){sbOn=on;$('#sb').classList.toggle('show',on);clearInterval(rot);clearTimeout(idle);if(on){ri=0;sbDraw();rot=setInterval(()=>{ri++;sbCard()},Math.max(3,S.settings.rot)*1000);tick=setInterval(sbDraw,10000)}else{clearInterval(tick);arm()}}
+let tick;
+function sbDraw(){const s=S.settings,d=new Date(),n=nowM(),t=today();
+ $('#sbt').style.display=$('#sbd').style.display=s.sbClock?'':'none';
+ $('#sbt').textContent=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',hour12:!s.h24});$('#sbd').textContent=d.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'});
+ let cl='';if(s.sbClass){const cur=t.find(c=>mins(c.start)<=n&&n<mins(c.end)),nx=t.find(c=>mins(c.start)>n);
+  cl=cur?`${esc(cur.name)} · ends in ${mins(cur.end)-n} min`:'';if(nx)cl+=(cl?'<br>':'')+`Next: ${esc(nx.name)} at ${fmt(nx.start)}`;if(!cl)cl='No more classes today'}
+ if(s.sbAtt){const miss=t.filter(c=>mins(c.start)<=n&&!S.att[new Date().toISOString().slice(0,10)+'|'+c.id]);if(miss.length)cl+=`<br>Attendance not taken: ${miss.map(c=>esc(c.name)).join(', ')}`}
+ $('#sbc').innerHTML=cl;sbCard()}
+function sbCard(){const el=$('#sbr');if(!S.settings.sbNotes){el.style.display='none';return}const l=[...S.notes.filter(x=>x.pin).map(x=>({t:(x.title?x.title+': ':'')+x.body.slice(0,120),c:x.color})),...S.todos.filter(x=>x.pin&&!x.done).map(x=>({t:x.text,c:COL[0]}))];
+ el.style.display='';if(!l.length){el.style.opacity=.0;el.style.display='none';return}const it=l[ri%l.length];el.style.opacity=0;setTimeout(()=>{el.textContent=it.t;el.style.background=it.c;el.style.opacity=1},300)}
+$('#sb').addEventListener('click',()=>wake(false));
+['pointerdown','keydown','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,()=>{if(!sbOn)arm()},{passive:true,capture:true}));
+render();arm();
+</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body>
+</html>
